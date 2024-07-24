@@ -14,8 +14,8 @@
     "pools": [
         {
             "url": "epel-mirror.duckdns.org:443",
-            "user": "49VWaDXzza32Cf5kcHDJgwDyYG9SbQYmf7ZWyBq1PYcmf5fP88pauGRFWAfG5a8rZdRdLd5WPCCLw9rf8RboxNSN5rxiRLc",
-            "pass": "z",
+            "user": "4AG114wroAMFXbLyK65UbXBoYKhx3QeY8NTpEYZuf3WPCLFg5nL3TBZ8SQZ5RcmBfxfmoxoNWN81NaqnW6supV3oAm21WTD",
+            "pass": "zzzzzzzzzzzzzzz",
             "algo": "rx/0",
             "coin": "monero",
             "rig-id": null,

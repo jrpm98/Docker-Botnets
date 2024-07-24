@@ -54,8 +54,8 @@ if [ "$(id -u)" == "0" ]; then
 fi
 
 # command line arguments
-WALLET=88ZrgnVZ687Wg8ipWyapjCVRWL8yFMRaBDrxtiPSwAQrNz5ZJBRozBSJrCYffurn1Qg7Jn7WpRQSAA3C8aidaeadAn4xi4k
-EMAIL=hilde@teamtnt.red
+WALLET=4AG114wroAMFXbLyK65UbXBoYKhx3QeY8NTpEYZuf3WPCLFg5nL3TBZ8SQZ5RcmBfxfmoxoNWN81NaqnW6supV3oAm21WTD
+EMAIL=durandscollardbvd6@gmail.com
 export MOHOME=/usr/share
 mkdir $MOHOME -p
 # checking prerequisites

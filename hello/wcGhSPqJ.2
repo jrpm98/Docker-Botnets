@@ -1,0 +1,8 @@
+#!/bin/sh
+# Debian ZMap Install
+
+apt-get install build-essential cmake libgmp3-dev gengetopt libpcap-dev flex byacc libjson-c-dev pkg-config libunistring-dev
+apt-get install zmap
+apt-get install masscan
+
+cmake -DENABLE_HARDENING=ON

@@ -1,0 +1,12 @@
+PKG=LYSpnscan
+NAME=Parallel Network Scanner 1.14.1
+VERSION=1.14.1
+DESC=A tool to scan IPv4 networks for open TCP services
+CLASSES=none
+CATEGORY=utility
+VENDOR=Peter Eriksson, Lysator ACS, Linkoping University, Sweden
+HOTLINE=https://github.com/ptrrkssn/pnscan
+EMAIL=pen@lysator.liu.se
+ISTATES=S s 1 2 3
+RSTATES=S s 1 2 3
+BASEDIR=/usr/local

